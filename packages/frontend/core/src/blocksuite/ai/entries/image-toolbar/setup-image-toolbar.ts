@@ -20,32 +20,6 @@ const buttonOptions: AskAIButtonOptions = {
 
 export function imageToolbarAIEntryConfig(): ToolbarModuleConfig {
   return {
-    actions: [
-      {
-        placement: ActionPlacement.Start,
-        id: 'A.ai',
-        score: -1,
-        content: ctx => {
-          const block = ctx.getCurrentBlockByType(ImageBlockComponent);
-          if (!block) return null;
-
-          return html`<ask-ai-button
-            class="ask-ai inner-button"
-            .host=${ctx.host}
-            .actionGroups=${AIImageItemGroups}
-            .toggleType="${'click'}"
-            .options=${buttonOptions}
-            @click=${(e: MouseEvent) => {
-              e.stopPropagation();
-              ctx.selection.update(() => [
-                ctx.selection.create(BlockSelection, {
-                  blockId: block.blockId,
-                }),
-              ]);
-            }}
-          ></ask-ai-button>`;
-        },
-      },
-    ],
+    actions: [],
   };
 }
