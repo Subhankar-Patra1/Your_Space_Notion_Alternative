@@ -15,6 +15,7 @@ WORKDIR /app
 RUN corepack enable
 
 COPY . .
+
 RUN yarn install
 RUN yarn workspace @affine/server-native build
 RUN cp ./packages/backend/native/server-native.node ./packages/backend/native/server-native.x64.node || true
@@ -28,10 +29,17 @@ RUN yarn affine @affine/mobile build
 FROM node:22-bookworm-slim
 WORKDIR /app
 
-COPY --from=builder /app/packages/backend/server /app
-COPY --from=builder /app/packages/frontend/apps/web/dist /app/static
-COPY --from=builder /app/packages/frontend/admin/dist /app/static/admin
-COPY --from=builder /app/packages/frontend/apps/mobile/dist /app/static/mobile
+# Yarn workspaces in monorepos hoist 'node_modules' directly to the root '/app' folder
+# The server code explicitly requires packages that are hosted in '/app/node_modules', so we must copy it.
+COPY --from=builder /app/node_modules /app/node_modules
+
+# We copy the backend server folder back to its nested location /app/packages/backend/server to preserve relative paths
+COPY --from=builder /app/packages/backend/server /app/packages/backend/server
+
+# Copy static frontend into the expected directory deep inside the server
+COPY --from=builder /app/packages/frontend/apps/web/dist /app/packages/backend/server/static
+COPY --from=builder /app/packages/frontend/admin/dist /app/packages/backend/server/static/admin
+COPY --from=builder /app/packages/frontend/apps/mobile/dist /app/packages/backend/server/static/mobile
 
 # Keeps server sourcemap for stacktraces
 ARG TARGETARCH
@@ -40,6 +48,8 @@ RUN apt-get update && \
   apt-get install -y --no-install-recommends openssl ca-certificates libjemalloc2 && \
   rm -rf /var/lib/apt/lists/*
 
+# Fix the work directory after copying the entire structure over so node works inside the server root
+WORKDIR /app/packages/backend/server
 RUN AFFINE_DOCKER_CLEAN=1 TARGETARCH="${TARGETARCH}" TARGETVARIANT="${TARGETVARIANT}" node ./scripts/docker-clean.mjs
 
 ENV LD_PRELOAD=libjemalloc.so.2
