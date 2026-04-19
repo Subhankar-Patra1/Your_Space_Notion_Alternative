@@ -93,3 +93,8 @@ af.cmd
 
 # playwright
 storageState.json
+
+# Environment files
+.env
+.env.*
+!.env.example
