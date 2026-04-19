@@ -68,6 +68,14 @@ export class URLHelper {
     this.redirectAllowHosts = [this.baseUrl];
 
     this.allowedOrigins = [this.origin];
+    // Allow additional origins from env var (comma-separated)
+    const extraOrigins =
+      process.env.AFFINE_ALLOWED_ORIGINS?.split(',')
+        .map(o => o.trim())
+        .filter(Boolean) ?? [];
+    if (extraOrigins.length > 0) {
+      this.allowedOrigins.push(...extraOrigins);
+    }
     if (this.config.server.hosts.length > 0) {
       for (const host of this.config.server.hosts) {
         this.allowedOrigins.push(this.convertHostToOrigin(host));

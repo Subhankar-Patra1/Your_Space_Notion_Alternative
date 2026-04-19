@@ -57,16 +57,7 @@ export class AskAIIcon extends WithDisposable(LitElement) {
   `;
 
   override render() {
-    return html`
-      <icon-button
-        class="ask-ai-icon-button ${this.size}"
-        width=${buttonWidthMap[this.size]}
-        height=${buttonHeightMap[this.size]}
-      >
-        ${AIStarIcon}
-        <span>Ask AI</span>
-      </icon-button>
-    `;
+    return html``;
   }
 }
 
