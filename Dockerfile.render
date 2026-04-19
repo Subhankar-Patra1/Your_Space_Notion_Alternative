@@ -16,6 +16,7 @@ RUN corepack enable
 COPY . .
 RUN yarn install
 RUN yarn workspace @affine/server-native build
+RUN yarn workspace @affine/server-native build
 RUN yarn workspace @affine/server build
 RUN yarn workspace @affine/web build
 RUN yarn workspace @affine/admin build
