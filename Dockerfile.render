@@ -16,8 +16,9 @@ RUN corepack enable
 COPY . .
 RUN yarn install
 RUN yarn workspace @affine/server-native build
-RUN cp ./packages/backend/native/server-native.node ./packages/backend/native/server-native.x64.node
-RUN cp ./packages/backend/native/server-native.node ./packages/backend/native/server-native.arm64.node
+RUN cp ./packages/backend/native/server-native.node ./packages/backend/native/server-native.x64.node || true
+RUN cp ./packages/backend/native/server-native.node ./packages/backend/native/server-native.arm64.node || true
+RUN cp ./packages/backend/native/server-native.node ./packages/backend/native/server-native.armv7.node || true
 RUN yarn workspace @affine/server build
 RUN yarn affine @affine/web build
 RUN yarn affine @affine/admin build
